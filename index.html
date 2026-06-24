@@ -6,511 +6,302 @@
 <title>AI Portfolio Tracker</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f8f9fa;color:#1a1a1a;font-size:12px;min-height:100vh}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f9fa;color:#1a1a1a;font-size:12px}
 
-/* ── UPDATE BAR ── */
-.update-bar{background:#1a1a2e;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:100;border-bottom:2px solid #4a90d9}
-.update-bar h1{font-size:14px;font-weight:700;color:#fff;flex:1;min-width:120px}
-#updateBtn{background:#4a90d9;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;display:flex;align-items:center;gap:6px}
-#updateBtn:hover{background:#2e6db4}
-#updateBtn:disabled{background:#555;cursor:not-allowed}
-#lastUpdated{font-size:10px;color:#9ab;white-space:nowrap}
-#statusBadge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;display:none}
-#statusBadge.ok{background:#1a7340;color:#d1fae5;display:inline}
-#statusBadge.err{background:#991b1b;color:#fee2e2;display:inline}
+/* ── TOP BAR ── */
+.topbar{background:#1a1a2e;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:100;border-bottom:2px solid #4a90d9}
+.topbar h1{font-size:14px;font-weight:700;color:#fff;flex:1}
+.stamp{font-size:10px;color:#8ab;background:#0f0f20;padding:3px 8px;border-radius:4px;white-space:nowrap}
 
-/* ── MARKET TICKERS ── */
-.mkt-bar{background:#0f0f1a;padding:8px 14px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.mkt-bar::-webkit-scrollbar{display:none}
-.mkt-tile{background:#1e1e30;border-radius:6px;padding:7px 12px;min-width:120px;flex-shrink:0;border:1px solid #2a2a40}
-.mkt-tile .mname{font-size:9.5px;color:#8892aa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-.mkt-tile .mval{font-size:15px;font-weight:700;color:#e2e8f0}
-.mkt-tile .mchg{font-size:10px;font-weight:600;margin-top:2px}
-.mkt-tile .mchg.up{color:#4ade80}
-.mkt-tile .mchg.dn{color:#f87171}
-.mkt-tile .mchg.flat{color:#94a3b8}
-.mkt-tile.loading .mval{color:#4a5568}
-
-/* ── MAIN CONTENT ── */
+/* ── MAIN ── */
 .main{padding:12px 14px}
 
-/* ── PORTFOLIO CARDS ── */
-.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
-@media(max-width:600px){.pgrid{grid-template-columns:repeat(2,1fr)}}
-.pcard{background:#fff;border-radius:8px;padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e8ecf0}
-.pcard .pl{font-size:10px;color:#666;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
-.pcard .pv{font-size:18px;font-weight:700;color:#1a1a1a}
-.pcard .pv.green{color:#1a7340}.pcard .pv.amber{color:#8a5c00}.pcard .pv.blue{color:#1a4a8a}
-
 /* ── FILTERS ── */
-.filter-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-.filter-row select{font-size:11.5px;padding:5px 8px;border:1px solid #d1d5db;border-radius:5px;background:#fff;color:#374151}
-.filter-row label{font-size:11.5px;color:#555;white-space:nowrap}
+.frow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.frow select{font-size:11px;padding:5px 7px;border:1px solid #d1d5db;border-radius:5px;background:#fff}
+.frow label{font-size:11px;color:#555;white-space:nowrap}
 
 /* ── TABLE ── */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-table{width:100%;border-collapse:collapse;background:#fff;font-size:11px;min-width:900px}
+.twrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:10.5px;min-width:900px}
 thead th{background:#f0f4f8;padding:6px 5px;text-align:left;font-weight:600;font-size:9.5px;color:#475569;border-bottom:2px solid #e2e8f0;white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0}
-thead th:hover{color:#1a1a1a;background:#e8edf3}
-tbody tr{border-bottom:1px solid #f1f5f9;transition:background .1s}
+thead th:hover{color:#1e293b}
+tbody tr{border-bottom:1px solid #f1f5f9}
 tbody tr:hover{background:#f8fafc}
 td{padding:6px 5px;vertical-align:middle}
 
-/* ── CELL STYLES ── */
-.ticker{font-weight:700;font-family:monospace;font-size:10px;color:#1a5fb4;display:block}
-.src-tag{font-size:8px;color:#aaa;font-weight:400}
-.bdg{display:inline-block;font-size:8px;padding:1.5px 5px;border-radius:3px;font-weight:600;white-space:nowrap}
-.bdg-us{background:#dbeafe;color:#1e40af}.bdg-kr{background:#dcfce7;color:#166534}.bdg-jp{background:#fef9c3;color:#713f12}
-.bdg-semi{background:#ede9fe;color:#5b21b6}.bdg-cool{background:#d1fae5;color:#065f46}
-.bdg-pwr{background:#fee2e2;color:#991b1b}.bdg-equip{background:#fef3c7;color:#92400e}
-.price-cell{white-space:nowrap}
-.price-main{font-size:11px;font-weight:600}
-.price-chg{font-size:9.5px;display:block;margin-top:1px}
-.chg-up{color:#1a7340}.chg-dn{color:#b91c1c}.chg-na{color:#aaa}
-.high52-cell{font-size:10.5px;white-space:nowrap}
-.h52v{font-weight:500}
-.h52p{font-size:9.5px}
-.pe-lo{color:#1a7340;font-weight:600}.pe-md{color:#8a5c00}.pe-hi{color:#b91c1c}
-.g-lo{color:#1a7340;font-weight:700}.g-md{color:#8a5c00;font-weight:600}.g-hi{color:#b91c1c;font-weight:700}
-.sig-buy{color:#1a7340;font-weight:700}.sig-hold{color:#8a5c00}.sig-watch{color:#b91c1c}
-.pos-up{color:#1a7340;font-size:9.5px}.pos-mid{color:#8a5c00;font-size:9.5px}.pos-dn{color:#b91c1c;font-size:9.5px}
-.dcf-box{white-space:nowrap;line-height:1.5}
-.rev-box{white-space:nowrap;text-align:center;line-height:1.4}
-.note-cell{font-size:9.5px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
-.inv-bdg{display:inline-block;font-size:8px;padding:1px 3px;border-radius:2px;margin-right:2px;font-weight:700}
-.inv-bf{background:#065f46;color:#d1fae5}.inv-gmo{background:#92400e;color:#fef3c7}
+/* ── CELLS ── */
+.tkr{font-weight:700;font-family:monospace;font-size:10px;color:#1a5fb4}
+.bdg{display:inline-block;font-size:8px;padding:1.5px 4px;border-radius:3px;font-weight:600;white-space:nowrap}
+.us{background:#dbeafe;color:#1e40af}.kr{background:#dcfce7;color:#166534}.jp{background:#fef9c3;color:#713f12}
+.semi{background:#ede9fe;color:#5b21b6}.cool{background:#d1fae5;color:#065f46}
+.pwr{background:#fee2e2;color:#991b1b}.equip{background:#fef3c7;color:#92400e}
+.ind{background:#e0f2fe;color:#0c4a6e}.mat{background:#fce7f3;color:#831843}.util{background:#ecfdf5;color:#064e3b}
+.plo{color:#1a7340;font-weight:600}.pmd{color:#8a5c00}.phi{color:#b91c1c}
+.glo{color:#1a7340;font-weight:700}.gmd{color:#8a5c00}.ghi{color:#b91c1c;font-weight:700}
+.sbuy{color:#1a7340;font-weight:700}.shold{color:#8a5c00}.swatch{color:#b91c1c}
+.up{color:#1a7340}.dn{color:#b91c1c}
+.dcb{white-space:nowrap;line-height:1.5}
+.rvb{white-space:nowrap;text-align:center;line-height:1.4}
+.nc{font-size:9.5px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.ib{display:inline-block;font-size:8px;padding:1px 3px;border-radius:2px;margin-right:2px;font-weight:700}
+.ibf{background:#065f46;color:#d1fae5}.ibg{background:#92400e;color:#fef3c7}
+.ibok{background:#1e3a5f;color:#bfdbfe}
+.h52cell{white-space:nowrap;line-height:1.5}
 
-/* ── ERROR TOAST ── */
-#errToast{display:none;background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;padding:8px 12px;border-radius:6px;font-size:11px;margin-bottom:8px;line-height:1.5}
-
-/* ── FOOTNOTE ── */
-.footnote{background:#fff;border-radius:8px;padding:12px 14px;font-size:10.5px;color:#64748b;line-height:1.7;border:1px solid #e2e8f0;margin-top:10px}
-.footnote b{color:#374151}
-.legend{font-size:10px;color:#555;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:10px}
+/* ── LEGEND + FOOTNOTE ── */
+.leg{font-size:10px;color:#555;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.fn{background:#fff;border-radius:8px;padding:12px 14px;font-size:10.5px;color:#64748b;line-height:1.7;border:1px solid #e2e8f0;margin-top:10px}
+.fn b{color:#374151}
+.update-note{background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:7px 12px;font-size:11px;color:#92400e;margin-bottom:10px}
 </style>
 </head>
 <body>
 
-<!-- ── UPDATE BAR ── -->
-<div class="update-bar">
+<div class="topbar">
   <h1>📊 AI Portfolio Tracker</h1>
-  <span id="lastUpdated">Baseline: Jun 19 2026</span>
-  <span id="statusBadge"></span>
-  <button id="updateBtn" onclick="updateAll()">↻ Update market data</button>
+  <span class="stamp">⏱ Data: Jun 24, 2026 · To update, ask Claude in this chat</span>
 </div>
 
-<!-- ── MARKET TICKERS ── -->
-<div class="mkt-bar" id="mktBar">
-  <div class="mkt-tile loading" id="m-sp500"><div class="mname">S&amp;P 500</div><div class="mval" id="mv-sp500">—</div><div class="mchg flat" id="mc-sp500">↻ press update</div></div>
-  <div class="mkt-tile loading" id="m-nasdaq"><div class="mname">Nasdaq</div><div class="mval" id="mv-nasdaq">—</div><div class="mchg flat" id="mc-nasdaq">↻ press update</div></div>
-  <div class="mkt-tile loading" id="m-t10y"><div class="mname">10Y UST Yield</div><div class="mval" id="mv-t10y">—</div><div class="mchg flat" id="mc-t10y">↻ press update</div></div>
-  <div class="mkt-tile loading" id="m-vox"><div class="mname">VOX (Comm Svc)</div><div class="mval" id="mv-vox">—</div><div class="mchg flat" id="mc-vox">↻ press update</div></div>
-</div>
-
-<!-- ── MAIN CONTENT ── -->
 <div class="main">
 
-<div class="pgrid">
-  <div class="pcard"><div class="pl">Portfolio</div><div class="pv blue">$765,000</div></div>
-  <div class="pcard"><div class="pl">Target Dec 2026</div><div class="pv green">$800,000</div></div>
-  <div class="pcard"><div class="pl">Required return</div><div class="pv amber">+4.6%</div></div>
-  <div class="pcard"><div class="pl">Stocks shown</div><div class="pv" id="cnt">23</div></div>
+<div class="update-note">
+  💡 <b>How to update:</b> Simply ask Claude in this chat — e.g. <i>"Update the tracker with the latest prices"</i> — and Claude will search for current quotes and rebuild this file for you.
 </div>
 
-<div id="errToast"></div>
-
-<div class="legend">
-  <span>P/E: <b class="pe-lo">≤25x value</b> · <b class="pe-md">25–50x moderate</b> · <b class="pe-hi">&gt;50x expensive</b></span>
-  <span>Impl g%: <b class="g-lo">&lt;15% value</b> · <b class="g-md">15–28% moderate</b> · <b class="g-hi">&gt;28% hype</b></span>
+<div class="leg">
+  <span>P/E: <span class="plo">≤25x value</span> · <span class="pmd">25–50x moderate</span> · <span class="phi">&gt;50x expensive</span></span>
+  <span>Impl g%: <span class="glo">&lt;15% value</span> · <span class="gmd">15–28% moderate</span> · <span class="ghi">&gt;28% hype</span></span>
+  <span style="margin-left:auto;color:#94a3b8"><span id="cnt">23</span> stocks</span>
 </div>
 
-<div class="filter-row">
+<div class="frow">
   <label>Market:</label>
-  <select id="mF"><option value="all">All</option><option value="US">🇺🇸 US</option><option value="KR">🇰🇷 Korea</option><option value="JP">🇯🇵 Japan</option></select>
+  <select id="fM"><option value="">All</option><option value="US">🇺🇸 US</option><option value="KR">🇰🇷 Korea</option><option value="JP">🇯🇵 Japan</option></select>
   <label>Sector:</label>
-  <select id="sF"><option value="all">All sectors</option><option value="Semiconductors">Semiconductors</option><option value="Cooling">Cooling</option><option value="Power">Power</option><option value="Semi-Equipment">Semi Equipment</option></select>
+  <select id="fS"><option value="">All sectors</option><option value="Semiconductors">Semiconductors</option><option value="Cooling">Cooling</option><option value="Power">Power</option><option value="Semi-Equipment">Semi Equipment</option><option value="Industrials">Industrials</option><option value="Materials">Materials</option><option value="Utilities">Utilities</option></select>
   <label>Signal:</label>
-  <select id="sigF"><option value="all">All</option><option value="Buy">Buy</option><option value="Hold">Hold</option><option value="Watch">Watch</option></select>
+  <select id="fSig"><option value="">All</option><option value="Buy">Buy</option><option value="Hold">Hold</option><option value="Watch">Watch</option></select>
   <label>DCF:</label>
-  <select id="dcmF"><option value="all">All</option><option value="under">Undervalued</option><option value="fair">Fair</option><option value="over">Overvalued</option></select>
+  <select id="fD"><option value="">All</option><option value="u">Undervalued</option><option value="f">Fair</option><option value="o">Overvalued</option></select>
 </div>
 
-<div class="tbl-wrap">
+<div class="twrap">
 <table>
-<thead>
-<tr>
-  <th onclick="srt('ticker')" style="width:58px">Ticker ↕</th>
-  <th onclick="srt('name')" style="width:74px">Company ↕</th>
-  <th onclick="srt('market')" style="width:32px">Mkt ↕</th>
+<thead><tr>
+  <th onclick="srt('ticker')" style="width:56px">Ticker ↕</th>
+  <th onclick="srt('name')" style="width:72px">Company ↕</th>
+  <th onclick="srt('market')" style="width:30px">Mkt ↕</th>
   <th onclick="srt('sector')" style="width:62px">Sector ↕</th>
-  <th onclick="srt('price')" style="width:80px">Price ↕</th>
-  <th onclick="srt('high52')" style="width:70px">52W High ↕</th>
-  <th onclick="srt('fcf0')" style="width:50px">FCF/sh ↕</th>
-  <th onclick="srt('g1')" style="width:36px">g₁ ↕</th>
-  <th onclick="srt('dcfV')" style="width:72px">DCF value ↕</th>
-  <th onclick="srt('implG')" style="width:62px">Impl. g% ↕</th>
+  <th onclick="srt('price')" style="width:78px">Price ↕</th>
+  <th onclick="srt('high52')" style="width:68px">52W High ↕</th>
+  <th onclick="srt('fcf0')" style="width:48px">FCF/sh ↕</th>
+  <th onclick="srt('g1')" style="width:34px">g₁ ↕</th>
+  <th onclick="srt('dcfV')" style="width:70px">DCF value ↕</th>
+  <th onclick="srt('implG')" style="width:60px">Impl. g% ↕</th>
   <th onclick="srt('pe')" style="width:40px">P/E ↕</th>
   <th onclick="srt('fpe')" style="width:42px">Fwd P/E ↕</th>
-  <th onclick="srt('above200')" style="width:46px">200d MA ↕</th>
-  <th onclick="srt('pcr')" style="width:38px">P/C ↕</th>
+  <th onclick="srt('capeSprd')" style="width:56px" title="Earnings yield (1/PE%) minus 4.25% 10Y Treasury baseline">EY−TNX ↕</th>
+  <th onclick="srt('cagr5')" style="width:54px" title="Estimated 5-year EPS CAGR">5Y EPS g ↕</th>
+  <th onclick="srt('a200')" style="width:44px">200d MA ↕</th>
+  <th onclick="srt('pcr')" style="width:36px">P/C ↕</th>
   <th onclick="srt('signal')" style="width:46px">Signal ↕</th>
   <th style="min-width:195px">Thesis / investors</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody id="tb"></tbody>
 </table>
 </div>
 
-<div class="footnote">
-<b>Data source &amp; update logic:</b> Press <i>↻ Update market data</i> to fetch live quotes via Yahoo Finance (allorigins.win CORS proxy). Updates: price, 52W high, today's % change, and dynamically recalculates trailing/forward P/E and DCF/reverse-DCF for each stock. Last fetched prices are saved to your browser's localStorage and reload automatically on next visit (max 24-hour cache).
+<div class="fn">
+<b>Institutional investor badges:</b> <span class="ib ibf">BG</span> Baillie Gifford · <span class="ib ibg">GMO</span> GMO/Grantham · <span class="ib ibok">OAK</span> Oaktree Capital (Howard Marks). <b>Note on Oaktree:</b> Oaktree's Q1 2026 13F (filed May 20, 2026, $4.96B equity portfolio) shows no confirmed overlap with any of the 23 tracked stocks. Their equity longs are concentrated in shipping (Torm), energy (Expand Energy), gold mining (Anglogold Ashanti), and distressed/turnaround plays — consistent with their credit-first mandate. A $329M put on QQQ is their most prominent AI/tech-related position (bearish macro hedge). The OAK badge infrastructure is in place; update any stock's <code>inv</code> array to include <code>'OAK'</code> if Oaktree establishes a confirmed position.
+<br><br> · US prices from Robinhood live quotes · Korean prices from TradingView/Investing.com · Japan: Tokyo Electron from Investing.com (May 1); others from Jun 15–19 estimates · 52W highs updated where confirmed.
 <br><br>
-<b>Market bar:</b> S&amp;P 500 (^GSPC) · Nasdaq Composite (^IXIC) · 10-Year US Treasury yield (^TNX) · VOX = Vanguard Communication Services ETF (proxy for AI/media/tech sector sentiment).
+<b>Key moves since Jun 19:</b> AVGO −8% post-earnings (JPMorgan "aggressive buyer", fwd PE 23x) · MU Q3 earnings today after close · SK Hynix hit ATH ₩2,945,000 Jun 22 then pulled back to ₩2,555,000 on Rubin HBM cut concerns · SK Hynix plans $29.4B Nasdaq ADR listing ~July 10 · Samsung fell to ₩310,000 · GEV PE improved dramatically from 58x to 32.85x (upgraded Watch→Hold) · NVDA testing $200 support.
 <br><br>
-<b>DCF methodology:</b> 2-stage FCF model — 5-year Stage 1 at g₁ (analyst consensus), terminal at 2.5%. WACC: US 9.5%, Korea 10.5%, Japan 8.5%. <b>Impl. g%</b> = reverse-DCF: the FCF growth rate the market is pricing in. FCF/sh from latest company SEC filings (AVGO Q2 FY26, VRT Q1 FY26, GEV FY26 guidance).
+<b>EY−TNX:</b> Earnings yield (1 ÷ trailing P/E × 100%) minus 4.25% 10Y Treasury baseline. Positive = stock earnings yield exceeds risk-free rate. <b>5Y EPS g:</b> Estimated 5-year compound EPS growth from filings. Colour: <span class="glo">≥15% strong</span> · <span class="gmd">5–15% moderate</span> · <span class="phi">&lt;5% slow</span>. n/a* = fewer than 5 years listed (GEV spun off Apr 2024).
+<br><br>
+<b>DCF:</b> 2-stage FCF — Stage 1 g₁ × 5yr + terminal 2.5%. WACC: US 9.5%, Korea 10.5%, Japan 8.5%. <b>Impl. g%</b> = reverse-DCF: FCF growth priced in by market (bisection solve). <span class="ghi">Red &gt;28%</span> = priced for perfection vs GMO bubble-risk framework.
 </div>
-</div><!-- end .main -->
+</div>
 
 <script>
-// ─────────────────────────────────────────────
-//  CONSTANTS & MARKET TICKER CONFIG
-// ─────────────────────────────────────────────
-const R={US:0.095,KR:0.105,JP:0.085};
-const GT=0.025,YRS=5;
+// ── DCF MATHS ─────────────────────────────────────────────────────────────
+const WACC={US:0.095,KR:0.105,JP:0.085},gT=0.025,Ny=5;
+function dcfV(f,g,r){let p=0;for(let t=1;t<=Ny;t++)p+=f*Math.pow(1+g,t)/Math.pow(1+r,t);return p+f*Math.pow(1+g,Ny)*(1+gT)/((r-gT)*Math.pow(1+r,Ny));}
+function rDCF(px,f,r){if(!f||f<=0)return null;const lo=-0.2,hi=0.98;if(dcfV(f,lo,r)>=px)return lo;if(dcfV(f,hi,r)<=px)return hi;let a=lo,b=hi;for(let i=0;i<80;i++){const m=(a+b)/2;dcfV(f,m,r)<px?a=m:b=m;}return(a+b)/2;}
+const TNX=4.25; // 10Y Treasury baseline %
 
-const MARKETS=[
-  {id:'sp500', name:'S&P 500',        yf:'^GSPC', value:null, chg:null, fmt:v=>'$'+v.toLocaleString('en-US',{maximumFractionDigits:2})},
-  {id:'nasdaq',name:'Nasdaq',         yf:'^IXIC', value:null, chg:null, fmt:v=>v.toLocaleString('en-US',{maximumFractionDigits:2})},
-  {id:'t10y',  name:'10Y UST',        yf:'^TNX',  value:null, chg:null, isYield:true, fmt:v=>v.toFixed(3)+'%'},
-  {id:'vox',   name:'VOX',            yf:'VOX',   value:null, chg:null, fmt:v=>'$'+v.toFixed(2)},
-];
+function recalc(s){
+  const r=WACC[s.market];
+  s.dcfV   = dcfV(s.fcf0, s.g1, r);
+  s.dcfGap = (s.dcfV-s.price)/s.price;
+  s.implG  = rDCF(s.price, s.fcf0, r);
+  s.capeSprd = s.pe>0 ? parseFloat(((1/s.pe*100)-TNX).toFixed(2)) : null;
+}
 
-// ─────────────────────────────────────────────
-//  STOCK DATA  (yf = Yahoo Finance ticker)
-// ─────────────────────────────────────────────
+// ── STOCK DATA (prices as of Jun 24, 2026) ────────────────────────────────
+// pe/fpe auto-derived from confirmed price & EPS where available;
+// otherwise scaled proportionally from Jun 19 baseline.
 const D=[
-  {ticker:"NVDA",   yf:"NVDA",       name:"NVIDIA",           market:"US",sector:"Semiconductors",
-   price:210.33,  high52:236.54,  fcf0:5.50,  g1:0.22, pe:31.3, fpe:22.0, above200:14,  pcr:0.72, signal:"Hold", inv:["BG"],
-   note:"BG #1 holding 6.8%; fwd PE 22x; FY26 rev $216B +65%; $25B debt raise Jun 15; Rubin GPU ramp"},
-  {ticker:"AVGO",   yf:"AVGO",       name:"Broadcom",         market:"US",sector:"Semiconductors",
-   price:411.46,  high52:495.00,  fcf0:8.60,  g1:0.28, pe:65.6, fpe:25.0, above200:28,  pcr:0.65, signal:"Buy",  inv:[],
-   note:"Fwd PE 25x (StockAnalysis Jun 16); PEG 0.55; AI semi +200% YoY Q3 guidance; $1.83T mkt cap"},
-  {ticker:"AMAT",   yf:"AMAT",       name:"Applied Materials", market:"US",sector:"Semi-Equipment",
-   price:618.45,  high52:638.90,  fcf0:8.50,  g1:0.15, pe:46.1, fpe:33.5, above200:63,  pcr:0.88, signal:"Hold", inv:["GMO"],
-   note:"GMO holder; new ATH $638.90 Jun 18; fwd PE 33.5x; +217% 52W; impl g ~43%"},
-  {ticker:"LRCX",   yf:"LRCX",       name:"Lam Research",     market:"US",sector:"Semi-Equipment",
-   price:395.92,  high52:401.00,  fcf0:13.50, g1:0.15, pe:70.6, fpe:40.0, above200:72,  pcr:0.91, signal:"Hold", inv:["GMO"],
-   note:"GMO top-4; PE 70.6x; near ATH $401; +12.7% surge Jun 11; impl g ~48%"},
-  {ticker:"MU",     yf:"MU",         name:"Micron",           market:"US",sector:"Semiconductors",
-   price:1142.92, high52:1145.87, fcf0:9.50,  g1:0.28, pe:53.2, fpe:9.0,  above200:66,  pcr:0.95, signal:"Buy",  inv:[],
-   note:"New ATH $1,145.87 Jun 18; fwd PE 9x — best value/growth combo; Q3 earnings Jun 24; Rosenblatt PT $1,200"},
-  {ticker:"ETN",    yf:"ETN",        name:"Eaton",            market:"US",sector:"Power",
-   price:421.89,  high52:435.43,  fcf0:10.00, g1:0.12, pe:33.0, fpe:32.0, above200:8,   pcr:0.75, signal:"Buy",  inv:[],
-   note:"+8% since Jun 13; Mobility spinoff via Dana RMT Jun 10; FY26 adj EPS guide $13–13.50; DC power infra"},
-  {ticker:"GEV",    yf:"GEV",        name:"GE Vernova",       market:"US",sector:"Power",
-   price:1109.62, high52:1181.95, fcf0:26.00, g1:0.20, pe:58.0, fpe:70.0, above200:40,  pcr:0.62, signal:"Watch",inv:[],
-   note:"$1,110 Jun 18 (+15% since Jun 13); 52W high $1,181; fwd PE ~70x; $150B backlog; Watch — very expensive"},
-  {ticker:"VRT",    yf:"VRT",        name:"Vertiv",           market:"US",sector:"Cooling",
-   price:336.60,  high52:379.94,  fcf0:5.00,  g1:0.25, pe:83.6, fpe:47.0, above200:53,  pcr:0.60, signal:"Hold", inv:[],
-   note:"PE 83.6x; FY26 FCF $2.1–2.3B guided; backlog +109%; hit ATH Jun 19; DC cooling pure-play"},
-  {ticker:"PH",     yf:"PH",         name:"Parker-Hannifin",  market:"US",sector:"Cooling",
-   price:957.10,  high52:1034.96, fcf0:27.00, g1:0.10, pe:38.0, fpe:34.0, above200:12,  pcr:0.82, signal:"Buy",  inv:[],
-   note:"70-yr dividend streak; $2.00/q raised; Circor A&D acq $2.5B; Bernstein PT $1,026; Barclays top pick"},
-  {ticker:"TT",     yf:"TT",         name:"Trane Technologies",market:"US",sector:"Cooling",
-   price:479.56,  high52:503.47,  fcf0:9.50,  g1:0.12, pe:36.0, fpe:30.0, above200:10,  pcr:0.70, signal:"Hold", inv:[],
-   note:"LiquidStack acq; bookings doubled Q1 2026; chiller backlog multi-year; 52W high $503"},
-  {ticker:"MOD",    yf:"MOD",        name:"Modine Mfg",       market:"US",sector:"Cooling",
-   price:295.61,  high52:323.25,  fcf0:1.92,  g1:0.25, pe:125.7,fpe:38.0, above200:48,  pcr:1.05, signal:"Buy",  inv:[],
-   note:"PE 125x (earnings fell on capex investment); hyperscaler long-term DC cooling agreements; DC rev +78%"},
-  {ticker:"NVT",    yf:"NVT",        name:"nVent Electric",   market:"US",sector:"Cooling",
-   price:171.75,  high52:178.00,  fcf0:3.00,  g1:0.12, pe:56.3, fpe:34.0, above200:35,  pcr:0.90, signal:"Hold", inv:[],
-   note:"PE 56.3x; near 52W high $178; DC liquid cooling enclosures; new strategy chief appointed"},
-  {ticker:"FIX",    yf:"FIX",        name:"Comfort Systems",  market:"US",sector:"Power",
-   price:1979.29, high52:2073.99, fcf0:45.00, g1:0.15, pe:47.0, fpe:41.0, above200:52,  pcr:0.78, signal:"Hold", inv:[],
-   note:"$1,979 Jun 18; backlog $12.5B; Q1 rev +56% EPS +119%; Oppenheimer PT $2,200; impl g ~30%"},
-  {ticker:"IR",     yf:"IR",         name:"Ingersoll Rand",   market:"US",sector:"Cooling",
-   price:71.96,   high52:100.96,  fcf0:3.30,  g1:0.10, pe:28.0, fpe:26.0, above200:-5,  pcr:0.83, signal:"Hold", inv:[],
-   note:"Near 52W low $68; Q1 rev +8%; watchlist for re-entry near support; diversified pumps/compressors"},
-  {ticker:"ECL",    yf:"ECL",        name:"Ecolab",           market:"US",sector:"Cooling",
-   price:273.73,  high52:309.27,  fcf0:5.96,  g1:0.10, pe:33.7, fpe:28.9, above200:3,   pcr:0.74, signal:"Hold", inv:[],
-   note:"PE 33.7x; CoolIT acq pending; 30+ yr dividend grower; water treatment for DC cooling"},
-  {ticker:"DOV",    yf:"DOV",        name:"Dover Corp",       market:"US",sector:"Cooling",
-   price:222.63,  high52:237.54,  fcf0:7.86,  g1:0.08, pe:20.0, fpe:17.0, above200:6,   pcr:0.88, signal:"Buy",  inv:[],
-   note:"69-yr dividend king; CDU heat exchanger parts; P/E 20x; 52W high $237.54; overlooked value"},
-  {ticker:"A000660",yf:"000660.KS", name:"SK Hynix",         market:"KR",sector:"Semiconductors",
-   price:2764000, high52:2891000, fcf0:100000,g1:0.15, pe:26.2, fpe:9.8,  above200:86,  pcr:0.55, signal:"Buy",  inv:["BG"],
-   note:"New ATH ₩2,891,000 Jun 19; fwd PE ~10x; BG EM top holding; HBM4 leader; Nvidia GTC 2026 partnership"},
-  {ticker:"A005930",yf:"005930.KS", name:"Samsung Elec",     market:"KR",sector:"Semiconductors",
-   price:362500,  high52:370000,  fcf0:8000,  g1:0.10, pe:28.2, fpe:10.0, above200:53,  pcr:0.60, signal:"Buy",  inv:["BG"],
-   note:"₩362,500 Jun 18; PE 28.2x; ATH ₩370,000; Q1 net income ₩47.1T; HBM4 → Rubin; BG holder"},
-  {ticker:"8035.T", yf:"8035.T",    name:"Tokyo Electron",   market:"JP",sector:"Semi-Equipment",
-   price:70000,   high52:71000,   fcf0:500,   g1:0.18, pe:55.9, fpe:44.0, above200:63,  pcr:0.70, signal:"Buy",  inv:["BG"],
-   note:"Est ~¥70,000; BG holding; ATH ¥71,000 Jun 12; mkt cap +11.5% last week; AI capex supercycle"},
-  {ticker:"6857.T", yf:"6857.T",    name:"Advantest",        market:"JP",sector:"Semi-Equipment",
-   price:30660,   high52:32400,   fcf0:200,   g1:0.15, pe:40.2, fpe:45.2, above200:40,  pcr:0.72, signal:"Hold", inv:[],
-   note:"¥30,660 Jun 16; 52W high ¥32,400; fwd EPS ¥679; Q4 beat; 10k system/yr capacity target 2028"},
-  {ticker:"6367.T", yf:"6367.T",    name:"Daikin",           market:"JP",sector:"Cooling",
-   price:23360,   high52:25900,   fcf0:250,   g1:0.10, pe:24.9, fpe:22.0, above200:14,  pcr:0.80, signal:"Buy",  inv:[],
-   note:"¥23,360 Jun 15; Elliott activist stake; Chilldyne CDU acq; ¥350B buyback complete; PE 24.9x value"},
-  {ticker:"6503.T", yf:"6503.T",    name:"Mitsubishi Elec",  market:"JP",sector:"Cooling",
-   price:6500,    high52:6686,    fcf0:85,    g1:0.10, pe:30.4, fpe:32.0, above200:38,  pcr:0.77, signal:"Hold", inv:[],
-   note:"Est ~¥6,500; ATH ¥6,686 May 27; Hon Hai JV auto parts; HVAC & DC cooling exposure"},
-  {ticker:"6723.T", yf:"6723.T",    name:"Renesas",          market:"JP",sector:"Semiconductors",
-   price:3497,    high52:4183,    fcf0:70,    g1:0.15, pe:23.0, fpe:15.0, above200:18,  pcr:0.90, signal:"Hold", inv:[],
-   note:"¥3,497 Jun 19 ✓ (+32%); upgraded Watch→Hold; 52W high ¥4,183; MCU recovery; fwd PE 15x"},
+  {ticker:'NVDA',   name:'NVIDIA',           market:'US',sector:'Semiconductors', cagr5:.50,
+   price:198.70,  high52:236.54,  fcf0:5.50,  g1:.22, pe:29.6, fpe:20.8, a200:7,  pcr:.72, signal:'Hold', inv:['BG'],
+   note:'BG #1 holding; $200 support test; Vera Rubin GPU ramp; FY26 rev $216B; Bernstein "absurdly cheap"'},
+  {ticker:'AVGO',   name:'Broadcom',          market:'US',sector:'Semiconductors', cagr5:.24,
+   price:380.00,  high52:495.00,  fcf0:8.60,  g1:.28, pe:68.5, fpe:23.1, a200:18, pcr:.65, signal:'Buy',  inv:[],
+   note:'−8% post-earnings (gross margin guide miss); JPMorgan "aggressive buyer"; fwd PE 23x; AI rev +200% YoY'},
+  {ticker:'AMAT',   name:'Applied Materials',  market:'US',sector:'Semi-Equipment', cagr5:.18,
+   price:586.00,  high52:641.18,  fcf0:8.50,  g1:.15, pe:43.7, fpe:31.7, a200:54, pcr:.88, signal:'Hold', inv:['GMO'],
+   note:'GMO holder; 52W high $641; insider selling $65M Jun 16; BofA PT $720; AI capex picks-and-shovels'},
+  {ticker:'LRCX',   name:'Lam Research',       market:'US',sector:'Semi-Equipment', cagr5:.17,
+   price:370.78,  high52:409.75,  fcf0:13.50, g1:.15, pe:70.1, fpe:37.5, a200:68, pcr:.91, signal:'Hold', inv:['GMO'],
+   note:'GMO top-4; PE 70x; 52W high $409.75; Q3 results beat Jun 11; HBM etch demand strong'},
+  {ticker:'MU',     name:'Micron',             market:'US',sector:'Semiconductors', cagr5:.05,
+   price:1057.59, high52:1213.56, fcf0:9.50,  g1:.28, pe:49.2, fpe:8.3,  a200:54, pcr:.95, signal:'Buy',  inv:[],
+   note:'Q3 earnings tonight Jun 24; 52W high $1,213.56; fwd PE 8.3x — deepest value; Anthropic deal; HBM4 ramp'},
+  {ticker:'ETN',    name:'Eaton',              market:'US',sector:'Industrials',    cagr5:.14,
+   price:409.20,  high52:436.74,  fcf0:10.00, g1:.12, pe:32.0, fpe:31.0, a200:6,  pcr:.75, signal:'Buy',  inv:[],
+   note:'Mobility spinoff via Dana RMT; Boyd Thermal acq; FY26 adj EPS guide $13–13.50; 52W high $436.74'},
+  {ticker:'GEV',    name:'GE Vernova',          market:'US',sector:'Utilities',      cagr5:null,
+   price:1050.00, high52:1181.95, fcf0:26.00, g1:.20, pe:32.9, fpe:38.0, a200:38, pcr:.62, signal:'Hold', inv:[],
+   note:'PE improved dramatically 58x→32.85x (earnings surged); upgraded Watch→Hold; $150B backlog; grid + turbines'},
+  {ticker:'VRT',    name:'Vertiv',             market:'US',sector:'Industrials',    cagr5:.22,
+   price:324.75,  high52:379.94,  fcf0:5.00,  g1:.25, pe:80.7, fpe:45.3, a200:48, pcr:.60, signal:'Hold', inv:[],
+   note:'DC cooling pure-play; FY26 FCF $2.1–2.3B guided; backlog +109%; PE 81x still expensive'},
+  {ticker:'PH',     name:'Parker-Hannifin',     market:'US',sector:'Industrials',    cagr5:.14,
+   price:947.58,  high52:1034.96, fcf0:27.00, g1:.10, pe:35.5, fpe:33.7, a200:10, pcr:.82, signal:'Buy',  inv:[],
+   note:'PE 35.49x (Robinhood Jun 23 ✓); 70-yr dividend streak; Bernstein PT $1,026; Barclays top pick'},
+  {ticker:'TT',     name:'Trane Technologies',  market:'US',sector:'Industrials',    cagr5:.15,
+   price:485.24,  high52:503.47,  fcf0:9.50,  g1:.12, pe:36.4, fpe:30.4, a200:12, pcr:.70, signal:'Hold', inv:[],
+   note:'LiquidStack acq; bookings doubled Q1; chiller backlog multi-year; approaching 52W high $503'},
+  {ticker:'MOD',    name:'Modine Mfg',          market:'US',sector:'Industrials',    cagr5:.08,
+   price:280.76,  high52:323.25,  fcf0:1.92,  g1:.25, pe:119.4,fpe:36.1, a200:44, pcr:1.05, signal:'Buy',  inv:[],
+   note:'Hyperscaler long-term DC cooling agreements; PE 119x (capex phase); fwd PE 36x; DA Davidson Buy'},
+  {ticker:'NVT',    name:'nVent Electric',      market:'US',sector:'Industrials',    cagr5:.15,
+   price:170.10,  high52:184.64,  fcf0:3.00,  g1:.12, pe:55.8, fpe:33.7, a200:33, pcr:.90, signal:'Hold', inv:[],
+   note:'52W high $184.64 (updated); DC liquid cooling enclosures; new COO/strategy chief appointed'},
+  {ticker:'FIX',    name:'Comfort Systems',     market:'US',sector:'Industrials',    cagr5:.23,
+   price:1983.13, high52:2073.99, fcf0:45.00, g1:.15, pe:47.1, fpe:41.1, a200:51, pcr:.78, signal:'Hold', inv:[],
+   note:'$1,983 Jun 24 ✓; backlog $12.5B; Q1 rev +56% EPS +119%; new COO Jul 1; Oppenheimer PT $2,200'},
+  {ticker:'IR',     name:'Ingersoll Rand',       market:'US',sector:'Industrials',    cagr5:.17,
+   price:71.96,   high52:100.96,  fcf0:3.30,  g1:.10, pe:28.0, fpe:26.0, a200:-5, pcr:.83, signal:'Hold', inv:[],
+   note:'Jun 5 price (last confirmed); near 52W low $68; Q1 rev +8%; re-entry watchlist near support'},
+  {ticker:'ECL',    name:'Ecolab',               market:'US',sector:'Materials',      cagr5:.07,
+   price:273.73,  high52:309.27,  fcf0:5.96,  g1:.10, pe:33.7, fpe:28.9, a200:3,  pcr:.74, signal:'Hold', inv:[],
+   note:'Jun 17 price; CoolIT acq pending; 30+ yr dividend grower; water treatment moat for DC cooling'},
+  {ticker:'DOV',    name:'Dover Corp',           market:'US',sector:'Industrials',    cagr5:.10,
+   price:224.35,  high52:237.54,  fcf0:7.86,  g1:.08, pe:20.2, fpe:17.1, a200:7,  pcr:.88, signal:'Buy',  inv:[],
+   note:'69-yr dividend king; CDU heat exchanger parts; P/E 20x; Jun 23 ✓; overlooked value'},
+  // ── KOREA ──────────────────────────────────────────────────────────────
+  {ticker:'A000660',name:'SK Hynix',             market:'KR',sector:'Semiconductors', cagr5:.08,
+   price:2555000, high52:2945000, fcf0:100000,g1:.15, pe:24.2, fpe:9.1,  a200:72, pcr:.55, signal:'Buy',  inv:['BG'],
+   note:'BG EM top; ATH ₩2,945,000 Jun 22 then −13%; $29.4B Nasdaq ADR listing ~Jul 10; HBM4 dominant'},
+  {ticker:'A005930',name:'Samsung Elec',          market:'KR',sector:'Semiconductors', cagr5:.04,
+   price:310000,  high52:374500,  fcf0:8000,  g1:.10, pe:24.1, fpe:8.6,  a200:38, pcr:.60, signal:'Buy',  inv:['BG'],
+   note:'₩310,000 Jun 23; −17% from ATH ₩374,500; BG holder; Q1 net ₩47.1T; fwd PE 8.6x; HBM4 Rubin supply'},
+  // ── JAPAN ──────────────────────────────────────────────────────────────
+  {ticker:'8035.T', name:'Tokyo Electron',        market:'JP',sector:'Semi-Equipment', cagr5:.22,
+   price:75360,   high52:76890,   fcf0:500,   g1:.18, pe:60.2, fpe:47.4, a200:70, pcr:.70, signal:'Buy',  inv:['BG'],
+   note:'¥75,360 (May 2026 confirmed); BG holding; mkt cap ¥34.3T; AI semi-equipment supercycle'},
+  {ticker:'6857.T', name:'Advantest',             market:'JP',sector:'Semi-Equipment', cagr5:.25,
+   price:30660,   high52:32400,   fcf0:200,   g1:.15, pe:40.2, fpe:45.2, a200:40, pcr:.72, signal:'Hold', inv:[],
+   note:'Jun 16 price; fwd EPS ¥679 consensus; HBM test equipment demand; 10k sys/yr capacity 2028'},
+  {ticker:'6367.T', name:'Daikin',                market:'JP',sector:'Industrials',    cagr5:.08,
+   price:23360,   high52:25900,   fcf0:250,   g1:.10, pe:24.9, fpe:22.0, a200:14, pcr:.80, signal:'Buy',  inv:[],
+   note:'Jun 15 price; Elliott activist stake; Chilldyne CDU acq; ¥350B buyback; PE 24.9x value zone'},
+  {ticker:'6503.T', name:'Mitsubishi Elec',        market:'JP',sector:'Industrials',    cagr5:.07,
+   price:6500,    high52:6686,    fcf0:85,    g1:.10, pe:30.4, fpe:32.0, a200:38, pcr:.77, signal:'Hold', inv:[],
+   note:'~¥6,500 estimate; ATH ¥6,686 May 27; Hon Hai JV; HVAC & DC cooling exposure'},
+  {ticker:'6723.T', name:'Renesas',               market:'JP',sector:'Semiconductors', cagr5:.12,
+   price:3497,    high52:4183,    fcf0:70,    g1:.15, pe:23.0, fpe:15.0, a200:18, pcr:.90, signal:'Hold', inv:[],
+   note:'Jun 19 price; MCU recovery; fwd PE 15x; 52W high ¥4,183; upgraded Watch→Hold Jun 19'},
 ];
 
-// ─────────────────────────────────────────────
-//  DCF MATHS
-// ─────────────────────────────────────────────
-function dcfVal(f,g,r){
-  let pv=0;
-  for(let t=1;t<=YRS;t++) pv+=f*Math.pow(1+g,t)/Math.pow(1+r,t);
-  return pv + f*Math.pow(1+g,YRS)*(1+GT)/((r-GT)*Math.pow(1+r,YRS));
-}
-function revDCF(price,f,r){
-  if(!f||f<=0)return null;
-  const lo=-0.20,hi=0.98;
-  if(dcfVal(f,lo,r)>=price)return lo;
-  if(dcfVal(f,hi,r)<=price)return hi;
-  let a=lo,b=hi;
-  for(let i=0;i<80;i++){const m=(a+b)/2;dcfVal(f,m,r)<price?a=m:b=m;}
-  return(a+b)/2;
-}
+// Pre-compute DCF on load
+D.forEach(s => recalc(s));
 
-// Pre-compute EPS from baseline prices (used to update P/E when price changes)
-D.forEach(s=>{
-  s.eps    = s.pe  > 0 ? s.price / s.pe  : null;
-  s.fwdEps = s.fpe > 0 ? s.price / s.fpe : null;
-  calcDCF(s);
-});
+// ── RENDER TABLE ──────────────────────────────────────────────────────────
+let sCol=null, sAsc=true;
 
-function calcDCF(s){
-  const r=R[s.market];
-  s.dcfV  = dcfVal(s.fcf0, s.g1, r);
-  s.dcfGap= (s.dcfV - s.price) / s.price;
-  s.implG = revDCF(s.price, s.fcf0, r);
-}
-
-// ─────────────────────────────────────────────
-//  LOCALSTORAGE  (persist fetched prices 24h)
-// ─────────────────────────────────────────────
-let lastUpdated = null;
-
-function saveCache(){
-  try{
-    localStorage.setItem('ptCache', JSON.stringify({
-      ts: new Date().toISOString(),
-      stocks: D.map(s=>({ticker:s.ticker, price:s.price, high52:s.high52, chg1d:s.chg1d||null, pe:s.pe, fpe:s.fpe})),
-      markets: MARKETS.map(m=>({id:m.id, value:m.value, chg:m.chg}))
-    }));
-  }catch(e){}
-}
-function loadCache(){
-  try{
-    const raw=localStorage.getItem('ptCache');
-    if(!raw)return false;
-    const c=JSON.parse(raw);
-    if(Date.now()-new Date(c.ts).getTime()>86400000)return false;
-    c.stocks.forEach(sv=>{
-      const s=D.find(x=>x.ticker===sv.ticker);
-      if(!s)return;
-      s.price=sv.price; s.high52=sv.high52; s.chg1d=sv.chg1d;
-      if(s.eps)    s.pe  = s.price/s.eps;
-      if(s.fwdEps) s.fpe = s.price/s.fwdEps;
-      calcDCF(s);
-    });
-    c.markets.forEach(mv=>{ const m=MARKETS.find(x=>x.id===mv.id); if(m){m.value=mv.value;m.chg=mv.chg;} });
-    lastUpdated=new Date(c.ts);
-    return true;
-  }catch(e){return false;}
-}
-
-// ─────────────────────────────────────────────
-//  LIVE FETCH via Yahoo Finance + CORS proxy
-// ─────────────────────────────────────────────
-async function fetchBatch(symbols){
-  const sym=symbols.join(',');
-  const yahooUrl=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(sym)}&lang=en-US&region=US`;
-  const proxyUrl=`https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`;
-  const r=await fetch(proxyUrl, {signal:AbortSignal.timeout(18000)});
-  if(!r.ok) throw new Error(`Proxy HTTP ${r.status}`);
-  const d=await r.json();
-  return d?.quoteResponse?.result||[];
-}
-
-async function updateAll(){
-  const btn=document.getElementById('updateBtn');
-  const badge=document.getElementById('statusBadge');
-  const errToast=document.getElementById('errToast');
-  btn.disabled=true; btn.textContent='⏳ Updating...';
-  badge.className=''; badge.style.display='none';
-  errToast.style.display='none';
-  try{
-    // Build symbol lists
-    const mktSyms = MARKETS.map(m=>m.yf);
-    const stockSyms = D.map(s=>s.yf);
-    const allSyms = [...mktSyms, ...stockSyms];
-
-    // Fetch in batches of 20
-    const quotes={};
-    for(let i=0;i<allSyms.length;i+=20){
-      const batch=allSyms.slice(i,i+20);
-      const results=await fetchBatch(batch);
-      results.forEach(q=>{ quotes[q.symbol]=q; });
-      if(i+20<allSyms.length) await new Promise(res=>setTimeout(res,400));
-    }
-
-    // Apply market data
-    MARKETS.forEach(m=>{
-      const q=quotes[m.yf];
-      if(q){ m.value=q.regularMarketPrice; m.chg=q.regularMarketChangePercent; }
-    });
-
-    // Apply stock prices
-    D.forEach(s=>{
-      const q=quotes[s.yf];
-      if(!q) return;
-      s.price   = q.regularMarketPrice;
-      s.high52  = Math.max(s.high52||0, q.fiftyTwoWeekHigh||0) || q.fiftyTwoWeekHigh;
-      s.chg1d   = q.regularMarketChangePercent;
-      if(s.eps)    s.pe  = s.price/s.eps;
-      if(s.fwdEps) s.fpe = s.price/s.fwdEps;
-      calcDCF(s);
-    });
-
-    lastUpdated=new Date(); saveCache();
-    renderMarkets(); render(); updateTimestamp();
-    badge.textContent='✓ Live'; badge.className='ok';
-    btn.textContent='✓ Updated!';
-    setTimeout(()=>{btn.textContent='↻ Update market data';btn.disabled=false;},2500);
-  }catch(err){
-    console.error(err);
-    badge.textContent='✗ Failed'; badge.className='err';
-    errToast.style.display='block';
-    errToast.innerHTML='⚠ Could not fetch live data — check your connection and try again.<br><small>'+err.message+'</small>';
-    btn.textContent='↻ Update market data'; btn.disabled=false;
-  }
-}
-
-// ─────────────────────────────────────────────
-//  RENDER MARKET BAR
-// ─────────────────────────────────────────────
-function renderMarkets(){
-  MARKETS.forEach(m=>{
-    const tile=document.getElementById('m-'+m.id);
-    if(!tile) return;
-    if(m.value==null) return;
-    document.getElementById('mv-'+m.id).textContent=m.fmt(m.value);
-    const c=document.getElementById('mc-'+m.id);
-    if(m.chg!=null){
-      const up=m.chg>=0;
-      c.textContent=(up?'▲ +':'▼ ')+m.chg.toFixed(2)+'%';
-      c.className='mchg '+(up?'up':'dn');
-    }
-    tile.classList.remove('loading');
-  });
-}
-
-// ─────────────────────────────────────────────
-//  TIMESTAMP
-// ─────────────────────────────────────────────
-function updateTimestamp(){
-  if(!lastUpdated) return;
-  const d=lastUpdated;
-  const str=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+
-            ' '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('lastUpdated').textContent='Updated '+str;
-}
-
-// ─────────────────────────────────────────────
-//  RENDER TABLE
-// ─────────────────────────────────────────────
-let sortCol=null,sortAsc=true;
-
-function fmt(v,mkt){
+function fmt(v,mk){
   if(v==null||isNaN(v)) return '—';
-  const abs=Math.abs(v),neg=v<0?'-':'';
-  if(mkt==='KR') return neg+'₩'+Math.round(abs).toLocaleString();
-  if(mkt==='JP') return neg+'¥'+Math.round(abs).toLocaleString();
-  return neg+'$'+(abs<200?abs.toFixed(2):Math.round(abs).toLocaleString());
+  const a=Math.abs(v),n=v<0?'-':'';
+  if(mk==='KR') return n+'₩'+Math.round(a).toLocaleString();
+  if(mk==='JP') return n+'¥'+Math.round(a).toLocaleString();
+  return n+'$'+(a<200?a.toFixed(2):Math.round(a).toLocaleString());
 }
-function pct(v,d=1){return v==null?'—':((v>=0?'+':'')+(v*100).toFixed(d)+'%');}
-function peC(p){return p<=25?'pe-lo':p<=50?'pe-md':'pe-hi';}
-function secB(s){const m={Semiconductors:'bdg-semi',Cooling:'bdg-cool',Power:'bdg-pwr','Semi-Equipment':'bdg-equip'};return m[s]||'bdg-equip';}
-function mktB(m){return m==='US'?'bdg-us':m==='KR'?'bdg-kr':'bdg-jp';}
-function invB(inv){if(!inv||!inv.length)return '';const mp={BG:['inv-bf','BG'],GMO:['inv-gmo','GMO']};return inv.map(i=>mp[i]?`<span class="inv-bdg ${mp[i][0]}">${mp[i][1]}</span>`:'').join('');}
+function pp(v,d=1){return v==null?'—':((v>=0?'+':'')+(v*100).toFixed(d)+'%');}
+function peC(p){return p<=25?'plo':p<=50?'pmd':'phi';}
+function mB(m){return m==='US'?'us':m==='KR'?'kr':'jp';}
+function sB(s){const m={Semiconductors:'semi',Cooling:'cool',Power:'pwr','Semi-Equipment':'equip',Industrials:'ind',Materials:'mat',Utilities:'util'};return m[s]||'equip';}
+function iB(inv){if(!inv?.length)return '';const m={BG:'ibf',GMO:'ibg',OAK:'ibok'};return inv.map(x=>m[x]?`<span class="ib ${m[x]}">${x}</span>`:'').join('');}
 
-function priceCell(s){
-  const main=`<span class="price-main">${fmt(s.price,s.market)}</span>`;
-  let chg='<span class="price-chg chg-na">—</span>';
-  if(s.chg1d!=null){
-    const up=s.chg1d>=0;
-    chg=`<span class="price-chg ${up?'chg-up':'chg-dn'}">${up?'▲ +':'▼ '}${Math.abs(s.chg1d).toFixed(2)}% today</span>`;
-  }
-  return `<div class="price-cell">${main}${chg}</div>`;
-}
-function high52Cell(s){
+function h52Cell(s){
   const p=(s.price-s.high52)/s.high52*100;
-  const cls=p>=-5?'pos-up':p>=-15?'pos-mid':'pos-dn';
-  return`<div class="high52-cell"><span class="h52v">${fmt(s.high52,s.market)}</span><br><span class="${cls} h52p">${p.toFixed(1)}%</span></div>`;
+  const cls=p>=-5?'up':p>=-15?'pmd':'dn';
+  return`<div class="h52cell"><span style="font-weight:500">${fmt(s.high52,s.market)}</span><br><span class="${cls}" style="font-size:9.5px">${p.toFixed(1)}%</span></div>`;
 }
 function dcfCell(s){
-  const cls=s.dcfGap>0.10?'pos-up':s.dcfGap>-0.10?'pos-mid':'pos-dn';
-  return`<div class="dcf-box"><span style="font-weight:600;font-size:10px">${fmt(s.dcfV,s.market)}</span><br><span class="${cls}">${pct(s.dcfGap)} vs px</span></div>`;
+  const cls=s.dcfGap>0.10?'up':s.dcfGap>-0.10?'pmd':'dn';
+  return`<div class="dcb"><b style="font-size:10px">${fmt(s.dcfV,s.market)}</b><br><span class="${cls}">${pp(s.dcfGap)} vs px</span></div>`;
 }
-function implGCell(s){
-  const g=s.implG;
-  if(g==null)return '<span style="color:#aaa">n/a</span>';
-  const cls=g<0.15?'g-lo':g<0.28?'g-md':'g-hi';
-  const disp=g>=0.97?'>97%':g<=-0.195?'<-20%':pct(g,0);
+function implCell(s){
+  const g=s.implG; if(g==null) return '<span style="color:#aaa">n/a</span>';
+  const cls=g<0.15?'glo':g<0.28?'gmd':'ghi';
   const lbl=g<0.15?'value':g<0.28?'moderate':'hype';
-  return`<div class="rev-box"><span class="${cls}" style="font-size:12px">${disp}</span><br><span style="font-size:9px;color:#94a3b8">${lbl}</span></div>`;
+  const disp=g>=0.97?'>97%':pp(g,0);
+  return`<div class="rvb"><span class="${cls}" style="font-size:12px">${disp}</span><br><span style="font-size:9px;color:#94a3b8">${lbl}</span></div>`;
 }
-function pcrFmt(v){const c=v>1?'#dc2626':v<0.7?'#1a7340':'#8a5c00';return`<span style="color:${c}">${v.toFixed(2)}</span>`;}
-function sigCls(s){return s==='Buy'?'sig-buy':s==='Hold'?'sig-hold':'sig-watch';}
-function maCls(v){return v>0?'chg-up':'chg-dn';}
+function capeCell(s){
+  if(s.capeSprd==null) return '<span style="color:#aaa">n/a</span>';
+  const up=s.capeSprd>=0;
+  return`<span class="${up?'up':'dn'}" style="font-size:10.5px;font-weight:600">${(s.capeSprd>=0?'+':'')+s.capeSprd.toFixed(2)}pp</span>`;
+}
+function cagrCell(s){
+  if(s.cagr5==null) return '<span style="color:#aaa;font-size:9.5px">n/a*</span>';
+  const cls=s.cagr5>=.15?'glo':s.cagr5>=.05?'gmd':'phi';
+  return`<span class="${cls}" style="font-size:10.5px;font-weight:600">${(s.cagr5*100).toFixed(0)}%</span>`;
+}
+function pcrCell(v){const c=v>1?'#dc2626':v<0.7?'#1a7340':'#8a5c00';return`<span style="color:${c}">${v.toFixed(2)}</span>`;}
+function sigCell(s){return s==='Buy'?'sbuy':s==='Hold'?'shold':'swatch';}
 
 function render(){
-  const mkt=document.getElementById('mF').value;
-  const sec=document.getElementById('sF').value;
-  const sig=document.getElementById('sigF').value;
-  const dcm=document.getElementById('dcmF').value;
-  let data=[...D];
-  if(mkt!=='all') data=data.filter(s=>s.market===mkt);
-  if(sec!=='all') data=data.filter(s=>s.sector===sec);
-  if(sig!=='all') data=data.filter(s=>s.signal===sig);
-  if(dcm==='under') data=data.filter(s=>s.dcfGap>0.10);
-  else if(dcm==='fair') data=data.filter(s=>s.dcfGap>=-0.10&&s.dcfGap<=0.10);
-  else if(dcm==='over') data=data.filter(s=>s.dcfGap<-0.10);
-  if(sortCol){data.sort((a,b)=>{let av=a[sortCol]??-9e9,bv=b[sortCol]??-9e9;if(typeof av==='string')av=av.toLowerCase(),bv=bv.toLowerCase();return sortAsc?(av>bv?1:av<bv?-1:0):(av<bv?1:av>bv?-1:0);});}
-  document.getElementById('cnt').textContent=data.length;
-  document.getElementById('tb').innerHTML=data.map(s=>`<tr>
-<td><span class="ticker">${s.ticker}</span><span class="src-tag">${s.chg1d!=null?'live':'base'}</span></td>
-<td style="font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:74px">${s.name}</td>
-<td><span class="bdg ${mktB(s.market)}">${s.market}</span></td>
-<td><span class="bdg ${secB(s.sector)}" style="font-size:7.5px">${s.sector}</span></td>
-<td>${priceCell(s)}</td>
-<td>${high52Cell(s)}</td>
+  const fm  = document.getElementById('fM').value;
+  const fs  = document.getElementById('fS').value;
+  const fsig= document.getElementById('fSig').value;
+  const fd  = document.getElementById('fD').value;
+  let data = [...D];
+  if(fm)    data = data.filter(s=>s.market===fm);
+  if(fs)    data = data.filter(s=>s.sector===fs);
+  if(fsig)  data = data.filter(s=>s.signal===fsig);
+  if(fd==='u') data = data.filter(s=>s.dcfGap>0.10);
+  else if(fd==='f') data = data.filter(s=>s.dcfGap>=-0.10&&s.dcfGap<=0.10);
+  else if(fd==='o') data = data.filter(s=>s.dcfGap<-0.10);
+  if(sCol){data.sort((a,b)=>{let av=a[sCol]??-9e9,bv=b[sCol]??-9e9;if(typeof av==='string')av=av.toLowerCase(),bv=bv.toLowerCase();return sAsc?(av>bv?1:av<bv?-1:0):(av<bv?1:av>bv?-1:0);});}
+  document.getElementById('cnt').textContent = data.length;
+  document.getElementById('tb').innerHTML = data.map(s=>`<tr>
+<td><span class="tkr">${s.ticker}</span></td>
+<td style="font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:72px">${s.name}</td>
+<td><span class="bdg ${mB(s.market)}">${s.market}</span></td>
+<td><span class="bdg ${sB(s.sector)}" style="font-size:7.5px">${s.sector}</span></td>
+<td style="font-size:11px;font-weight:700;white-space:nowrap">${fmt(s.price,s.market)}</td>
+<td>${h52Cell(s)}</td>
 <td style="font-size:10px;white-space:nowrap">${fmt(s.fcf0,s.market)}</td>
 <td style="font-size:10px;color:#94a3b8">${(s.g1*100).toFixed(0)}%</td>
 <td>${dcfCell(s)}</td>
-<td>${implGCell(s)}</td>
+<td>${implCell(s)}</td>
 <td><span class="${peC(s.pe)}">${s.pe.toFixed(1)}x</span></td>
 <td><span class="${peC(s.fpe)}">${s.fpe.toFixed(1)}x</span></td>
-<td class="${maCls(s.above200)}" style="font-size:10px">${(s.above200>=0?'+':'')+s.above200}%~</td>
-<td>${pcrFmt(s.pcr)}</td>
-<td class="${sigCls(s.signal)}" style="font-size:10.5px;font-weight:700">${s.signal}</td>
-<td class="note-cell" title="${s.note}">${invB(s.inv)}${s.note}</td>
+<td style="text-align:center">${capeCell(s)}</td>
+<td style="text-align:center">${cagrCell(s)}</td>
+<td class="${s.a200>=0?'up':'dn'}" style="font-size:10px">${(s.a200>=0?'+':'')+s.a200}%~</td>
+<td>${pcrCell(s.pcr)}</td>
+<td class="${sigCell(s.signal)}" style="font-size:10.5px;font-weight:700">${s.signal}</td>
+<td class="nc" title="${s.note}">${iB(s.inv)}${s.note}</td>
 </tr>`).join('');
 }
 
-function srt(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true;}render();}
-['mF','sF','sigF','dcmF'].forEach(id=>document.getElementById(id).onchange=render);
-
-// ─────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────
-if(loadCache()){ renderMarkets(); updateTimestamp(); }
+function srt(col){if(sCol===col)sAsc=!sAsc;else{sCol=col;sAsc=true;}render();}
+['fM','fS','fSig','fD'].forEach(id=>document.getElementById(id).onchange=render);
 render();
 </script>
 </body>
